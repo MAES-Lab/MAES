@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env
+
+# Distribution / packaging
+build/
+dist/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OS-specific
+desktop.ini
+
+# OneDrive (CRITICAL — protects users from the OneDrive lock issue
+# that killed the original 777 analysis run)
+*.lock
+~$*
+
+# MAES-specific: simulation outputs
+# These can be regenerated; do not commit (they would bloat the repo).
+# To share specific runs use git-lfs or releases.
+data/seed*.json
+data_777/*.json
+data_777/selfdev/**/*.json
+analysis/**/*.csv
+analysis/**/*.json
+analysis_777/*.csv
+analysis_777/*.json
+
+# Allow analysis reports — these are documentation, OK to commit
+!analysis*/REPORT*.md
+!analysis*/README.md
+
+# Logs
+*.log
+logs/
+master_*.log
+
+# Temporary scratch
+scratch/
+tmp/
+*.tmp
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Keep the compiled PDF available for preview but don't auto-track
+# preprint/maes_preprint.pdf

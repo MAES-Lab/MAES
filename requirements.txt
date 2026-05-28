@@ -1,0 +1,14 @@
+# MAES — Minimal dependencies
+# The simulator itself uses only NumPy (this is a deliberate methodological
+# choice: Endogenous Mechanisms principle prohibits external ML primitives
+# in the simulation core).
+
+numpy>=1.24.0
+
+# Optional: enables p-values in analyze_777_v2.py
+# Without scipy, the analyzer still works but skips significance tests.
+# scipy>=1.10.0
+
+# Optional: for the publication preparation
+# matplotlib>=3.7.0     # if you want to generate figures from JSON outputs
+# pandas>=2.0.0         # convenient for exploratory analysis of CSV outputs
