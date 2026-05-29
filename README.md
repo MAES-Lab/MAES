@@ -61,7 +61,7 @@ The full mechanism registry currently catalogues **135 mechanisms** across 14 th
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-username>/maes
+git clone https://github.com/<MAES-Lab>/maes
 cd maes
 pip install -r requirements.txt
 
@@ -80,7 +80,7 @@ python scripts/analyze_all.py
 ## Reproducibility
 
 Phase 1 results are reproducible end-to-end on a single consumer machine in approximately 12 hours of CPU time. Hardware used:
-- Desktop: Intel i9, 32 GB RAM, RTX 4060 Ti (GPU unused; NumPy only)
+- Desktop: Intel i9, 32 GB RAM, RTX 4060 Ti 16 GB (GPU unused; NumPy only)
 - All 80 main runs + 15 self-development runs complete within budget
 
 Seed-deterministic: re-running with the same seed reproduces final `ai_peak` to floating-point tolerance.
