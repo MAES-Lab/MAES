@@ -1,0 +1,8 @@
+MAES Phase 1 Report — 95 файлов
+Основной прогон: 80, selfdev: 15, diverse: 0, pair: 0
+
+УСЛОВИЯ:
+  v3.0_A (N=20): ai_peak=32.15, dims=13.0, agents=120.0, ideas=202.3, catas=16.5, top=1374.24
+  v3.0_B_d5 (N=20): ai_peak=16.60, dims=5.0, agents=119.3, ideas=283.1, catas=16.9, top=594.35
+  v3.1_A (N=20): ai_peak=31.00, dims=13.0, agents=114.6, ideas=212.7, catas=17.1, top=1368.98
+  v3.1_B_d5 (N=20): ai_peak=15.25, dims=5.0, agents=119.0, ideas=299.0, catas=15.9, top=641.38
