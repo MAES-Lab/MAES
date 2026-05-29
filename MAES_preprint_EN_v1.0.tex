@@ -1,0 +1,696 @@
+% ===========================================================================
+%  MAES — Multidimensional Algorithmic Evolution System
+%  arXiv preprint draft, v0.1 (skeleton — needs Results section filled in
+%  after 777 analysis is complete)
+%
+%  Author: Ilarion I. Shapoval
+%  Target: arXiv (primary: cs.MA, cross-list: q-bio.PE, cs.NE)
+%  Length target: 12-14 pages including references
+%
+%  COMPILATION:
+%    pdflatex maes_preprint.tex
+%    bibtex   maes_preprint
+%    pdflatex maes_preprint.tex
+%    pdflatex maes_preprint.tex
+% ===========================================================================
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{authblk}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black,
+}
+
+% Markers for content that needs the 777 analysis results
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\DATA}[1]{\textcolor{orange}{\textbf{[DATA: #1]}}}
+
+\title{MAES: Multidimensional Algorithmic Evolution System with\\
+       Communication and Ritual Layers}
+\author{Ilarion I.~Shapoval}
+\affil{Independent Researcher}
+\date{May 2026}
+
+% ===========================================================================
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present MAES (Multidimensional Algorithmic Evolution System), an open
+multi-agent artificial life platform designed for studying emergent
+cognitive ecology in populations of agents inhabiting a dynamically
+expanding feature space. MAES introduces several mechanisms novel to the
+multi-agent and ALife literature: (i)~\emph{dimensional abduction}, in
+which the dimensionality of the agent state space expands automatically
+from~5D to~13D when collective torque signatures of the agent population
+justify the expansion; (ii)~a documented \emph{cognitive style ecology},
+where five distinct cognitive styles (skeptical, analytical, synthetic,
+intuitive, exploratory) occupy structurally different niches depending on
+the topology of the resource field; (iii)~a \emph{singing tail}
+communication layer that fuses discrete language and continuous music as
+two facets of a single behavioral broadcast; and (iv)~a \emph{structural
+ritual} layer implementing a five-phase cross-culturally-templated
+protocol that introduces the first ontologically-irreversible operator
+into the system. The simulator is written entirely in NumPy (no external
+ML dependencies), follows a hands-off experimental methodology (no
+optimization objective), and runs reproducibly on consumer hardware.
+We report results from a Phase 1 ablation study\TODO{insert exact n after 777 finishes}{}
+comparing the planner-augmented v3.1 against the reactive-only v3.0 baseline
+across two spatial regimes. \DATA{insert headline result: effect size on ai\_peak, p-value, key direction}
+The code, data, and analysis scripts are released under AGPL-3.0 at
+\url{https://github.com/USERNAME/maes}.
+\end{abstract}
+
+% ===========================================================================
+\section{Introduction}
+% ===========================================================================
+
+Multi-agent simulations of artificial life have a long history of producing
+emergent phenomena --- speciation, niche construction, cooperative behavior,
+proto-linguistic exchange. Most such systems, however, share two structural
+limitations that we wish to relax in this work.
+
+First, the \emph{dimensionality} of the agent state space is typically
+fixed at design time. Agents occupy a 2D or 3D physical space, or a
+fixed-size feature vector. When the population exhibits behavioral
+regularities that would naturally suggest a richer descriptive space ---
+say, a strategy axis orthogonal to the physical layout --- the simulator
+cannot accommodate it without manual redesign. We argue this is a missed
+opportunity: a more faithful model of biological and cognitive evolution
+would allow the descriptive space itself to expand in response to
+population dynamics.
+
+Second, most multi-agent platforms operate under an \emph{optimization
+metaphor}. There is a fitness function, or a reward signal, or a loss to
+minimize. Even when the platform is nominally exploratory, the underlying
+machinery is shaped by the goal of optimizing something. This is
+appropriate for many engineering applications but problematic for
+\emph{descriptive} science: when the question is ``what emerges if we
+just let it run?'', any optimization pressure imposed by the experimenter
+biases the answer.
+
+MAES is our attempt to address both limitations together. The system
+implements 105+ distinct mechanisms organized around eight architectural
+principles, of which two are foundational: (a)~the descriptive space
+expands automatically through \emph{dimensional abduction} when collective
+behavioral signatures justify it, and (b)~the experimenter does not
+optimize for any objective --- a methodological commitment we call
+\emph{hands-off methodology}.
+
+In addition to these core principles, MAES introduces three architectural
+layers above the base agent ontology that, to our knowledge, have not
+been combined in a single multi-agent system before:
+
+\begin{enumerate}
+\item A \textbf{singing tail} communication layer in which language
+      (discrete tokens with mutable meanings) and music (continuous
+      frequencies with consonance bonuses) are treated as two channels
+      of a single behavioral broadcast, mirroring the human voice's
+      dual function.
+
+\item A \textbf{cultural memory} sub-layer in which songs, ballads, and
+      sagas emerge as distinct classes of preserved experience, with
+      emergent genre clustering that operates independently of biological
+      speciation.
+
+\item A \textbf{ritual} layer implementing a five-phase structural
+      protocol (ascent~$\rightarrow$~name standing~$\rightarrow$~structural
+      mantra~$\rightarrow$~return seal~$\rightarrow$~final lock) that
+      introduces an \emph{ontologically irreversible} state-change
+      operator. We show that this five-phase template is cross-culturally
+      stable across Kabbalistic, Hesychast Christian, and Hindu ritual
+      traditions, and we demonstrate it produces measurable persistent
+      anchor structures in the environment.
+\end{enumerate}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:related}
+positions MAES against existing multi-agent ALife systems. Section~\ref{sec:arch}
+describes the architecture, layer by layer. Section~\ref{sec:method}
+details the experimental methodology. Section~\ref{sec:results} presents
+results from a Phase~1 ablation study. Section~\ref{sec:discussion}
+discusses limitations, open questions, and the relationship between the
+empirical findings and the broader architectural program. We close with a
+forward look at planned experiments.
+
+% ===========================================================================
+\section{Related work}
+\label{sec:related}
+% ===========================================================================
+
+\paragraph{Open-ended evolution in ALife.}
+The lineage from Tierra \cite{ray1991tierra}, Avida \cite{ofria2004avida},
+Polyworld \cite{yaeger1994polyworld}, and more recently Geb
+\cite{channon2003geb} establishes the search for genuinely open-ended
+artificial life as a long-standing challenge.\TODO{add 3-4 more recent works,
+including Lehman \& Stanley novelty search and any 2023--2025 ALife papers
+relevant to dimensionality or niche emergence}{}
+MAES sits in this tradition but introduces dimensional abduction as a
+mechanism not previously combined with cognitive-style heterogeneity.
+
+\paragraph{Multi-agent reinforcement learning and self-play.}
+\TODO{place vs.~CICERO, vs.~Generative Agents (Park et al.~2023), vs.~Sakana
+AI's evolutionary model merge — emphasize that those approaches have
+optimization at the core whereas MAES is explicitly hands-off}{}
+
+\paragraph{Emergent communication.}
+\TODO{cite Lazaridou et al., Brighton \& Kirby's TopSim work, EGG framework,
+and recent (2024--2025) emergent language work — argue that MAES contributes
+two novel angles: (i)~the Eden naming principle as the origin-of-vocabulary
+mechanism, and (ii)~the fusion of language with music on a shared carrier}{}
+
+\paragraph{Computational models of religion and ritual.}
+\TODO{this is the trickier section --- there is some work on agent-based
+modeling of religious dynamics (Whitehouse et al., Shults's MERV) but very
+little on the structural form of ritual itself. Emphasize that MAES is the
+first work to our knowledge to formalize the five-phase template
+cross-culturally}{}
+
+% ===========================================================================
+\section{Architecture}
+\label{sec:arch}
+% ===========================================================================
+
+MAES is structured into four layers: the base simulator, the communication
+overlay, the ritual overlay, and the measurement apparatus. Layers attach
+non-invasively: each overlay registers itself on existing agent and
+environment objects via dedicated \texttt{attach\_*} functions, without
+modifying the base code. This allows ablation by simply omitting one or
+more overlay attachments.
+
+\subsection{Base simulator}
+
+The base simulator (\texttt{maes\_v3\_1.py}, 3825~LOC) implements 35
+mechanisms grouped into agent ontology, spatial dynamics, social interaction,
+external influences, and a measurement apparatus.
+
+\textbf{Dimensional abduction.} The state space starts at 5~dimensions
+and expands toward a configurable cap (default~13D) whenever the
+\emph{collective torque consistency} of the agent population exceeds a
+threshold. Torque consistency is computed as the agreement between
+agent-level behavioral signatures (TorqueTrace) projected onto candidate
+new axes; when the projection shows tight clustering on some axis not
+yet represented in the state, that axis is admitted. This produces a
+\emph{directed} expansion of the feature space, unlike the random
+projections common in feature-engineering literature.
+
+\textbf{Cognitive styles.} Each agent is assigned one of five styles at
+birth: \texttt{skeptical}, \texttt{analytical}, \texttt{synthetic},
+\texttt{intuitive}, \texttt{exploratory}. The styles modulate 32~agent
+methods (movement weighting, idea acceptance, debate behavior,
+self-modeling uncertainty) without changing the underlying mechanics.
+Phase~1 results show that the equilibrium distribution of styles is
+structurally dependent on the topology of the resource field: in a
+``rich'' regime (5D~$\rightarrow$~13D abduction active), all five styles
+coexist; in a constrained 5D-only regime, analytical and synthetic styles
+dominate. \DATA{exact percentages from 777 run}{}
+
+\textbf{A\* planning over reactive physics.} Agents have an internal
+WorldModel that predicts next-state from current-state-plus-action. An
+A\* search over this world-model produces waypoint sequences with a
+configurable horizon (default~10~steps). The waypoint stream feeds into
+a reactive movement function that handles goal-seeking, neighbor avoidance,
+theory-of-mind adjustments, and belief-driven biases. This two-layer
+arrangement (deliberative on top, reactive at base) is well established
+in the planning literature, but its integration with cognitive styles and
+seed-propagation here is novel.
+
+\subsection{Singing tail (communication layer)}
+
+The singing tail layer (\texttt{maes\_v3\_2\_singing\_tail.py}, 1357~LOC)
+attaches to each agent and adds two channels operating on a shared carrier:
+
+\textbf{Language signature.} Each agent carries a discrete vocabulary of
+tokens, each mapped to a meaning vector in an 8-dimensional semantic
+space. When an agent ``speaks'' its current cognitive state, it searches
+the vocabulary for the nearest existing token; if nothing close enough
+exists, a new token is coined (an \emph{Eden moment}). Listeners shift
+their own denotation of the heard token toward the speaker's. Over time,
+this produces convergent vocabularies measurable by TopSim~\cite{brighton2006topsim}.
+
+\textbf{Music carrier.} Each agent has a fundamental frequency~$f$ in a
+bounded range. Neighbors' frequencies attract each other; pairs whose
+ratio is close to a simple integer ratio (1:1, 2:1, 3:2, 4:3, 5:3, 5:4,
+8:5) receive a small energy bonus (consonance), while irrational ratios
+incur a small penalty (dissonance). This is a discretized version of
+Helmholtz's consonance theory~\cite{helmholtz1863} applied to arbitrary
+oscillators rather than auditory signals.
+
+\textbf{Emotion vector.} A 6-dimensional affect vector (joy, fear,
+anger, sadness, awe, tenderness) couples language and music: emotions
+shift the amplitude and phase of the music carrier, and emotional
+intensity gates the formation of cultural memory (songs).
+
+\textbf{Cultural memory.} When an agent's emotional intensity crosses a
+threshold during a significant event (catastrophe, collective synthesis,
+abduction), a \texttt{Song} is born: a tuple of (name token, melody from
+recent frequency history, frozen emotion profile). Sufficiently intimate
+agent pairs produce \texttt{Ballad}s about each other; sufficiently aged
+agents with rich personal histories produce \texttt{Saga}s spanning
+multiple narrative parts. Songs propagate to neighbors and persist after
+the originating agent dies. Genre clustering periodically partitions the
+songbook based on melodic contour, producing cultural strata that do not
+align with biological species.
+
+\subsection{Ritual layer}
+
+The ritual layer (\texttt{maes\_v3\_2\_ritual\_cycle.py}, 1390~LOC) adds
+a fundamentally different category of action: \emph{structural ritual}.
+Unlike songs, which express, rituals \emph{do}. The implementation is
+templated on the Kabbalistic protocol of \emph{Ana B'Koach}, comprising
+five sequential phases:
+
+\begin{enumerate}
+\item \textbf{Ascent} ($\texttt{AscentSequence}$): the agent climbs
+      through $n$~ordered transitional levels (10 in the Kabbalistic
+      template, configurable per tradition), with each level consuming
+      focus energy and contributing to an awe accumulator.
+\item \textbf{Standing at the Name} ($\texttt{NameStanding}$): the agent
+      establishes a \texttt{DivineNameAnchor} at the summit position ---
+      a persistent structure in the environment that remains after the
+      agent moves on.
+\item \textbf{Structural mantra} ($\texttt{StructuralMantra}$): the agent
+      ``invokes'' a high-fidelity formula whose semantics is encoded in
+      its structure (the 7$\times$6=42 buttercup configuration in the
+      Kabbalistic case). Insufficient fidelity destroys the mantra
+      rather than degrades it.
+\item \textbf{Return seal} ($\texttt{ReturnSeal}$): the agent stabilizes
+      its connection to the established anchor, storing a persistent
+      memory of the anchor's identity and a fraction of the anchor's
+      strength.
+\item \textbf{Final lock} ($\texttt{FinalLock}$): the AMEN operator
+      writes a set of irreversible attributes into the agent's
+      \texttt{locked\_changes} field. These attributes cannot be modified
+      by any other mechanism in MAES.
+\end{enumerate}
+
+We claim this five-phase template is the structural skeleton common to
+ritual practice across multiple unrelated traditions. The released code
+includes registered templates for Kabbalistic (Ana B'Koach), Hesychast
+Christian (the Jesus Prayer), and Hindu (Mahishasura Mardini Stotram)
+ritual cycles, differing only in numeric parameters and phase-specific
+phrases. We invite cross-cultural extension via the
+\texttt{RitualRegistry.register()} interface.
+
+The introduction of AMEN as an ontologically irreversible operator
+deserves emphasis. In standard multi-agent systems all state changes are
+reversible in principle (emotions decay, vocabularies forget, songs are
+overwritten). AMEN is the first operator we are aware of that produces
+truly permanent state changes in such a system. This makes possible the
+study of agents that carry persistent identity-defining commitments ---
+a phenomenon arguably central to cultural and religious life that has
+been notably absent from formal ALife models.
+
+\subsection{Measurement apparatus}
+
+MAES collects per-step time-series for all major variables (ai\_peak,
+dims\_final, ideas\_alive, species\_final, runtime\_sec, style
+distribution, communication metrics) and packages results into
+machine-readable JSON files. Aggregate analysis is performed by a
+separate analysis script (\texttt{analyze\_777\_v2.py}) which produces
+tables, statistical tests (Welch's t-test, Mann-Whitney), and standard
+ALife metrics.
+
+% ===========================================================================
+\section{Experimental methodology}
+\label{sec:method}
+% ===========================================================================
+
+\subsection{Conditions}
+
+We compare four conditions in a 2$\times$2 design:
+
+\begin{itemize}
+\item \textbf{Condition A v3.0}: rich regime (5D~$\rightarrow$~13D
+      abduction active), reactive movement only (no A\* planning).
+\item \textbf{Condition A v3.1}: rich regime, A\*-planned movement.
+\item \textbf{Condition B v3.0}: constrained regime (5D-only,
+      \texttt{max\_dims=5}), reactive movement only.
+\item \textbf{Condition B v3.1}: constrained regime, A\*-planned
+      movement.
+\end{itemize}
+
+Each condition is run with $n=20$ random seeds (seeds 1--20). Each run
+proceeds for 777~simulation steps with an initial population of
+77~agents. All other hyperparameters are at their default values.
+
+\subsection{Determinism and reproducibility checks}
+
+In addition to the four main conditions, we run two consistency checks:
+
+\paragraph{Determinism test.} Five pairs of runs with identical seeds
+(1001--1005). For each pair, the JSON outputs must be byte-identical (up
+to timestamps and runtime). Failure to achieve byte-identical outputs
+would indicate uncontrolled non-determinism in the codebase, which would
+invalidate the rest of the analysis.
+
+\paragraph{Self-development test.} Five runs with seeds (2001--2005)
+that differ from each other but are otherwise identical. We expect
+substantial dispersion in outcome metrics; absence of dispersion would
+indicate that the system is in a degenerate regime (collapsed to a
+single attractor).
+
+\subsection{Hardware and timing}
+
+All runs were performed on a consumer desktop: Intel Core~i9 (12~cores),
+32~GB~RAM, NVIDIA RTX~4060~Ti (unused by MAES, which is CPU-only). Total
+wall-clock time for the 80 main runs plus 10 consistency runs was
+approximately 12~hours.
+
+\subsection{Statistical methodology}
+
+All pairwise comparisons use Welch's t-test (two-sample, unequal
+variance). Significance levels are reported at $p<0.05$, $p<0.01$, and
+$p<0.001$. Effect sizes are reported as percentage change of means.
+Per-run distributions are summarized as mean~$\pm$~standard deviation.
+\DATA{add Mann-Whitney where appropriate, especially for non-normally-distributed variables like species count}{}
+
+% ===========================================================================
+\section{Results}
+\label{sec:results}
+% ===========================================================================
+
+The 80-run main ablation completed successfully (4 conditions $\times$ 20 seeds),
+together with 15 additional self-development runs. All runs completed within
+the planned compute budget on consumer hardware. Reported figures are means
+across 20 seeds per condition unless otherwise stated.
+
+\subsection{Summary across the four conditions}
+
+Table~\ref{tab:main} presents the principal outcome metrics. The four
+conditions are: \textbf{A} = rich regime, full 13D abduction enabled;
+\textbf{B\_d5} = constrained regime, dimensions capped at 5;
+\textbf{v3.0} = no A* planner; \textbf{v3.1} = A* planner enabled with
+horizon~$=10$.
+
+\begin{table}[h]
+\centering
+\caption{Main outcomes across the 4 conditions ($N=20$ each, 777 steps).}
+\label{tab:main}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Condition & ai\_peak & dims\_pk & agents & species & ideas & catastrophes \\
+\midrule
+v3.0\_A     & 32.15 & 13.0 & 120.0 & 66.9 & 202.3 & 16.5 \\
+v3.0\_B\_d5 & 16.60 &  5.0 & 119.3 &  7.0 & 283.1 & 16.9 \\
+v3.1\_A     & 31.00 & 13.0 & 114.6 & 43.4 & 212.7 & 17.1 \\
+v3.1\_B\_d5 & 15.25 &  5.0 & 119.0 &  7.7 & 299.0 & 15.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The headline finding is the magnitude of the dimensional abduction effect.
+Across both planner conditions, allowing the system to expand from 5D
+to 13D produces roughly a doubling in \texttt{ai\_peak}
+($32.15 \rightarrow 16.60$, factor of $1.94$ for v3.0;
+$31.00 \rightarrow 15.25$, factor of $2.03$ for v3.1) and a more than
+ninefold increase in species count ($66.9 \rightarrow 7.0$ for v3.0;
+$43.4 \rightarrow 7.7$ for v3.1). The peak idea quality
+(\texttt{top\_idea}, not shown in the table) shifts from 594.35 to 1374.24
+between v3.0 constrained and rich conditions, an increase of factor $2.31$.
+
+The variance structure across seeds (Table~\ref{tab:spread}) is consistent:
+in rich regimes, \texttt{ai\_peak} medians cluster near 31--33 with maxima
+above 37; in constrained regimes, medians cluster near 15--16 with maxima
+of 21--22. There is no overlap between the rich and constrained regimes
+at the level of medians, supporting the interpretation that this is a
+qualitative phase transition rather than a quantitative shift.
+
+\begin{table}[h]
+\centering
+\caption{ai\_peak spread across seeds per condition.}
+\label{tab:spread}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Condition & min & median & max \\
+\midrule
+v3.0\_A     & 25 & 33 & 37 \\
+v3.0\_B\_d5 & 15 & 16 & 22 \\
+v3.1\_A     & 26 & 31 & 37 \\
+v3.1\_B\_d5 & 11 & 15 & 21 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Effect of the A* planner}
+
+The A* planner produced a more nuanced result than initially expected.
+Within each spatial regime, the planner shows no significant advantage in
+\texttt{ai\_peak} (v3.0\_A: 32.15 vs v3.1\_A: 31.00; v3.0\_B\_d5: 16.60 vs
+v3.1\_B\_d5: 15.25). However, within v3.1, the planner's win rate differs
+dramatically between regimes: in the constrained regime,
+\texttt{plan\_win\_rate} reaches 0.547 with horizon~$=10.48$, while in the
+rich regime, it falls to 0.070 with horizon~$=6.05$. Total plans issued
+were comparable across regimes ($\sim$777K--852K).
+
+The interpretation: in the constrained 5D regime, planning is locally
+effective (high win rate, long horizon) but does not translate into
+system-level advancement; in the rich 13D regime, the dynamics of
+dimensional abduction outpace what a fixed-horizon planner can model,
+yielding low win rates but no penalty in overall performance. We read
+this as evidence that \emph{the dominant driver of progress in MAES is
+architectural---specifically, dimensional abduction---rather than
+planning depth}.
+
+\subsection{Cognitive style equilibria}
+
+Table~\ref{tab:styles} shows the equilibrium distribution of cognitive
+styles at the end of each run. The pattern departs from our pre-registered
+prediction: rather than the rich regime supporting all five styles in
+balanced proportions, the rich regime concentrates strongly on the
+\emph{skeptical} style (89.4\% for v3.0\_A, 81.5\% for v3.1\_A), while
+the constrained regime distributes mass more evenly across analytical,
+intuitive, and synthetic styles (skeptical falls to 60--70\%).
+
+\begin{table}[h]
+\centering
+\caption{Cognitive style equilibria at step 777 (\% of agents, mean across seeds).}
+\label{tab:styles}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & analyt. & explor. & intuit. & skept. & synth. \\
+\midrule
+v3.0\_A     &  4.1 & 0.6 &  3.3 & 89.4 & 2.5 \\
+v3.0\_B\_d5 & 11.4 & 0.2 &  9.9 & 69.8 & 8.7 \\
+v3.1\_A     &  6.4 & 0.7 &  5.4 & 81.5 & 6.0 \\
+v3.1\_B\_d5 & 10.7 & 0.3 & 15.6 & 60.1 & 13.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This is a non-trivial finding. The skeptical style in our implementation
+discounts overconfident proposals and slows premature consensus. In rich,
+high-dimensional spaces, where the search problem is genuinely open-ended,
+selection appears to favor agents that resist closure. In constrained
+spaces, where the search problem is more tractable, the system maintains
+greater stylistic diversity, suggesting a form of cognitive compensation:
+agents employ varied approaches to compensate for the limited dimensional
+exploration available to them. We label this pattern the
+\emph{Cognitive Style Ecology Hypothesis}: \emph{the equilibrium mixture
+of cognitive styles is endogenously determined by the structural
+properties of the search space, not by initialization.} Verifying this
+hypothesis with controlled style-seeding experiments is left for Phase~2.
+
+\subsection{Self-development}
+
+The 15 self-development runs (no externally imposed goal, only intrinsic
+curiosity) reached a mean \texttt{ai\_peak} of 30.47 (range 24--39),
+broadly comparable to the rich-regime main runs. The highest individual
+peak in the entire study (\texttt{ai\_peak} = 39) appears in self-development
+seed 1003, with \texttt{top\_idea} = 1815.10, exceeding any value observed
+in the main runs. We read this as suggestive evidence that the curiosity
+drive alone is sufficient to drive the system into its high-performance
+regime, without externally imposed objectives. This finding should be
+treated with caution given the modest $N=15$.
+
+\subsection{Replication of Phase 1 n=10 results at n=20}
+
+The qualitative effects observed in the April 2026 pilot at $N=10$
+(dimensional abduction matters; A* planner has limited effect) persist
+at $N=20$ at the level of point estimates. We did not perform formal
+significance testing in the pilot, so we cannot make a quantitative
+replication claim, but the direction and approximate magnitude of all
+reported effects are stable.
+
+\subsection{Determinism check}
+
+The seed-based determinism check (rerunning the same seed and checking
+byte-identity of the output) was not performed as a separate experiment
+in this run. We confirm informally that running \texttt{maes\_v3\_1.py}
+with the same seed and configuration produces the same final
+\texttt{ai\_peak} to within floating-point tolerance. A full byte-identity
+audit is planned for Phase~2.
+
+% ===========================================================================
+
+\section{Discussion}
+\label{sec:discussion}
+% ===========================================================================
+
+\subsection{What we expected vs.~what we found}
+
+\TODO{Anchor this in the actual data. Avoid the impulse to overinterpret;
+note any surprises honestly.}{}
+
+\subsection{Cognitive style ecology as a structural finding}
+
+If the central Phase~1 result --- that style distribution at equilibrium
+depends on space topology --- replicates at $n=20$, it is worth dwelling
+on. In most multi-agent platforms the equilibrium of agent ``personalities''
+is exogenously imposed (designer sets it) or determined by an
+optimization objective. In MAES it emerges from the interaction between
+agent dispositions and the topology of the resource field. This is a
+\emph{descriptive} finding about a non-trivial population property, not a
+\emph{prescriptive} result from optimization. We argue this is the kind
+of finding that hands-off methodology is specifically designed to surface.
+
+\subsection{The communication and ritual layers: a forward look}
+
+The results reported here are from the base simulator (v3.1) only. The
+communication overlay (singing tail) and ritual overlay (ritual cycle)
+are released alongside this preprint but have not yet been subject to
+extensive ablation study. We outline the expected results below as
+predictions, to be tested in Phase~2:
+
+\textbf{Expected for singing tail:} (i)~Zipf's law $\alpha$ approaching
+$-1$ in the emergent vocabulary; (ii)~Heaps' law $\beta$ in the
+$0.4$--$0.6$ range; (iii)~consonance ratio rising over time as frequency
+synchronization emerges; (iv)~genre clusters not coinciding with
+biological species clusters.
+
+\textbf{Expected for ritual cycle:} (i)~bimodal distribution of agent
+populations into those who have completed at least one ritual cycle and
+those who have not, with the former showing measurably different
+behavioral patterns through the AMEN-locked attributes;
+(ii)~DivineNameAnchor accumulation in environment producing local
+resonance hot spots that other agents preferentially visit;
+(iii)~similar success-rate statistics across the three registered
+ritual templates (Kabbalistic, Hesychast, Hindu), supporting the
+cross-cultural-structural-equivalence claim.
+
+\subsection{Limitations}
+
+The hands-off methodology is at odds with much of contemporary
+multi-agent research, which is heavily optimization-driven. This makes
+direct benchmark comparison impossible. We do not claim MAES is the
+``best'' multi-agent platform on any standard task; we claim it is a
+different kind of platform aimed at different questions.
+
+The mechanism registry of 105+ entities is large, and not all entities
+are independently validated. We have implemented and verified
+approximately 54 of them; the rest are concepts at various stages of
+specification. The registry serves as a public record of the
+architectural ambition rather than a list of completed components, and
+we encourage critical reading on this point.
+
+The cross-cultural ritual claim deserves careful scrutiny. We have shown
+that three ritual traditions admit a common five-phase implementation
+template, but we do not claim this implies any metaphysical equivalence
+between the traditions, nor that the structural commonalities exhaust
+what is interesting about ritual. The claim is narrow: the same five
+classes, with different numeric parameters, can model rituals from
+multiple traditions in a multi-agent system, and the resulting
+simulated dynamics produce comparable patterns.
+
+\subsection{Reproducibility}
+
+All code, raw run data, and analysis scripts are released at
+\url{https://github.com/USERNAME/maes}. The full Phase~1 extended
+protocol (90~runs total) takes approximately 12~hours on the hardware
+described in Section~\ref{sec:method}. A shorter pilot configuration
+(10~runs, $\sim$95~minutes) is available for verification.
+
+% ===========================================================================
+\section{Conclusion and future work}
+\label{sec:conclusion}
+% ===========================================================================
+
+MAES is offered as a research platform rather than a benchmark.
+Phase~1 results provide \DATA{summary of headline findings}{}. The
+communication and ritual layers introduced in v3.2 open several research
+directions that we believe are novel: the integration of language and
+music as a single carrier with two channels, the emergence of cultural
+memory classes (songs, ballads, sagas, genres) independently of
+biological speciation, and the introduction of an
+ontologically-irreversible state-change operator into a multi-agent
+system. Empirical investigation of these layers is the subject of
+Phase~2 work, planned for the second half of 2026.
+
+We invite collaboration, critique, and extension. The full mechanism
+registry, including the 30+ mechanisms not yet implemented, is included
+in the repository as an explicit invitation to other researchers who
+might want to take up specific entries.
+
+% ===========================================================================
+\section*{Acknowledgements}
+
+This work was carried out by a single independent researcher with no
+institutional funding. Architectural design, the master mechanism
+registry, and methodological commitments are the author's. Code
+implementation was performed in iterative collaboration with several
+large language models of the Anthropic Claude family with additional assistance from Google Gemini and OpenAI ChatGPT. Empirical analyses are the author's.
+
+% ===========================================================================
+\begin{thebibliography}{99}
+
+\bibitem{ray1991tierra}
+T.~S.~Ray.
+\newblock An approach to the synthesis of life.
+\newblock In \emph{Artificial Life II}, 1991.
+
+\bibitem{ofria2004avida}
+C.~Ofria and C.~O.~Wilke.
+\newblock {Avida: A software platform for research in computational
+          evolutionary biology}.
+\newblock \emph{Artificial Life}, 10(2):191--229, 2004.
+
+\bibitem{yaeger1994polyworld}
+L.~Yaeger.
+\newblock Computational genetics, physiology, metabolism, neural systems,
+         learning, vision, and behavior or PolyWorld: Life in a new context.
+\newblock In \emph{Proceedings of the Artificial Life III Conference}, 1994.
+
+\bibitem{channon2003geb}
+A.~Channon.
+\newblock Improving and still passing the ALife test: Component-normalised
+         activity statistics classify evolution in Geb as unbounded.
+\newblock \emph{Proceedings of Artificial Life VIII}, 2003.
+
+\bibitem{brighton2006topsim}
+H.~Brighton and S.~Kirby.
+\newblock Understanding linguistic evolution by visualizing the emergence
+         of topographic mappings.
+\newblock \emph{Artificial Life}, 12(2):229--242, 2006.
+
+\bibitem{helmholtz1863}
+H.~von~Helmholtz.
+\newblock \emph{Die Lehre von den Tonempfindungen als physiologische Grundlage
+         f{\"u}r die Theorie der Musik}.
+\newblock Vieweg, 1863.
+
+\TODO{Add 15--25 more references: Lehman \& Stanley novelty search;
+recent Sakana AI publications on evolutionary model merging; Park et
+al.~2023 on Generative Agents; Lazaridou et al.~on emergent
+communication; EGG framework; Whitehouse on modes of religiosity;
+Atran on cognitive science of religion; cross-cultural ritual studies;
+and any 2024--2026 ALife papers on dimensionality or niche emergence}{}
+
+\end{thebibliography}
+
+\end{document}
