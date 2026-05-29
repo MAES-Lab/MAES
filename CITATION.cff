@@ -8,7 +8,7 @@ authors:
     name-particle: "I."
     email: davidov.job@gmail.com
     affiliation: "Independent Researcher"
-repository-code: "https://github.com/<your-username>/maes"
+repository-code: "https://github.com/<MAES-Lab>/maes"
 abstract: >
   MAES is a single-file Python multi-agent ALife simulator (NumPy only)
   that studies emergent cognitive ecology, dimensional abduction, and
