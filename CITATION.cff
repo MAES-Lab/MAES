@@ -3,21 +3,22 @@ title: "MAES: Multidimensional Algorithmic Evolution System"
 message: "If you use this software, please cite as below."
 type: software
 authors:
-  - given-names: Ilarion
+  - given-names: "Ilarion I."
     family-names: Shapoval
-    name-particle: "I."
-    email: davidov.job@gmail.com
+    email: maes.framework@gmail.com
     affiliation: "Independent Researcher"
-repository-code: "https://github.com/<MAES-Lab>/maes"
+    orcid: "https://orcid.org/0009-0004-1851-2036"
+repository-code: "https://github.com/MAES-Lab/MAES"
 abstract: >
   MAES is a single-file Python multi-agent ALife simulator (NumPy only)
   that studies emergent cognitive ecology, dimensional abduction, and
   communication layers. Built on a hands-off methodology: the experimenter
   sets initial conditions and observes; the simulator does not optimize
   for any goal. Phase 1 empirical study (80 runs, 4 conditions x 20 seeds)
-  demonstrates that dimensional abduction (5D->13D) approximately doubles
-  ai_peak and yields ~9x increase in species diversity, supporting the
-  central architectural claim.
+  reports that dimensional abduction (5D->13D) approximately doubles
+  ai_peak and yields ~9x increase in species diversity.
+  Note: in v1.0 ai_peak was read over a 200-trace window; this measurement
+  error is documented in the v3.3 release notes.
 keywords:
   - artificial-life
   - multi-agent-systems
@@ -33,8 +34,9 @@ preferred-citation:
   type: misc
   title: "MAES: Multidimensional Algorithmic Evolution System -- Phase 1 Empirical Study"
   authors:
-    - given-names: Ilarion
+    - given-names: "Ilarion I."
       family-names: Shapoval
-      name-particle: "I."
+      orcid: "https://orcid.org/0009-0004-1851-2036"
   year: 2026
+  url: "https://github.com/MAES-Lab/MAES"
   notes: "Preprint available in repository."
